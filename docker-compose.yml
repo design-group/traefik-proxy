@@ -2,6 +2,7 @@ services:
   proxy:
     image: traefik:2.9
     container_name: proxy
+    restart: always
     ports:
       - 80:80
     environment:  # https://docs.traefik.io/reference/static-configuration/env/
