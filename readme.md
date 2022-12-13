@@ -32,15 +32,15 @@ To add an Ignition Gateway or other container to the proxy, add the following la
 
 ```yaml
 labels:
-	traefik.enable: "true"
-	traefik.http.routers.<container-name>.entrypoints: "web"
-	traefik.http.routers.<container-name>.rule: "Host(`<container-name>.localtest.me`)"
-	traefik.http.services.<container-name>.loadbalancer.server.port: "<container-port>"
+  traefik.enable: "true"
+  traefik.http.routers.<container-name>.entrypoints: "web"
+  traefik.http.routers.<container-name>.rule: "Host(`<container-name>.localtest.me`)"
+  traefik.http.services.<container-name>.loadbalancer.server.port: "<container-port>"
 environment:
-	GATEWAY_SYSTEM_NAME: <container-name>
-	GATEWAY_PUBLIC_HTTP_PORT: 80
-	GATEWAY_PUBLIC_HTTPS_PORT: 443
-	GATEWAY_PUBLIC_ADDRESS: <container-name>.localtest.me
+  GATEWAY_SYSTEM_NAME: <container-name>
+  GATEWAY_PUBLIC_HTTP_PORT: 80
+  GATEWAY_PUBLIC_HTTPS_PORT: 443
+  GATEWAY_PUBLIC_ADDRESS: <container-name>.localtest.me
 ```
 
 For example, to add an Ignition Gateway to the proxy, add the following labels and environment variables to the container:
@@ -62,8 +62,8 @@ The traefik proxy is configured to use the `proxy` network. If the container is 
 
 ```yaml
 networks:
-	- default
-	- proxy
+  - default
+  - proxy
 ```
 
 Then add the following to the `docker-compose.yml` file:
@@ -94,11 +94,11 @@ Then, add the labels and environment variables to the `docker-compose.traefik.ym
 ```yaml
 services:
   ignition:
-	image: bwdesigngroup/ignition-docker:8.1.22
-	ports:
-	  - 8088:8088
-	volumes:
-	  - ignition-data:/workdir
+    image: bwdesigngroup/ignition-docker:8.1.22
+    ports:
+      - 8088:8088
+    volumes:
+      - ignition-data:/workdir
 ```
 
 Here is the `docker-compose.traefik.yml` file for the Ignition Gateway:
@@ -106,25 +106,25 @@ Here is the `docker-compose.traefik.yml` file for the Ignition Gateway:
 ```yaml
 services:
   ignition:
-	labels:
-	  traefik.enable: "true"
-	  traefik.http.routers.ignition.entrypoints: "web"
-	  traefik.http.routers.ignition.rule: "Host(`ignition.localtest.me`)"
-	  traefik.http.services.ignition.loadbalancer.server.port: "8088"
-	environment:
-	  GATEWAY_SYSTEM_NAME: ignition
-	  GATEWAY_PUBLIC_HTTP_PORT: 80
-	  GATEWAY_PUBLIC_HTTPS_PORT: 443
-	  GATEWAY_PUBLIC_ADDRESS: ignition.localtest.me
-	networks:
-	  - default
-	  - proxy
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.ignition.entrypoints: "web"
+      traefik.http.routers.ignition.rule: "Host(`ignition.localtest.me`)"
+      traefik.http.services.ignition.loadbalancer.server.port: "8088"
+    environment:
+      GATEWAY_SYSTEM_NAME: ignition
+      GATEWAY_PUBLIC_HTTP_PORT: 80
+      GATEWAY_PUBLIC_HTTPS_PORT: 443
+      GATEWAY_PUBLIC_ADDRESS: ignition.localtest.me
+    networks:
+      - default
+      - proxy
 
 networks:
   default:
   proxy:
-	external: true
-	name: proxy
+    external: true
+    name: proxy
 ```
 
 After adding the labels and environment variables, re-up the container. Once the container restarts, it should be accessible at `http://ignition.localtest.me/`.
