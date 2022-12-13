@@ -1,0 +1,24 @@
+services:
+  proxy:
+    image: traefik:2.9
+    container_name: proxy
+    ports:
+      - 80:80
+    environment:  # https://docs.traefik.io/reference/static-configuration/env/
+      - TRAEFIK_ENTRYPOINTS_WEB_ADDRESS=:80
+      - TRAEFIK_API_DASHBOARD=true
+      - TRAEFIK_PROVIDERS_DOCKER=true
+      - TRAEFIK_PROVIDERS_DOCKER_EXPOSEDBYDEFAULT=true
+      - TRAEFIK_PROVIDERS_DOCKER_NETWORK=proxy
+      - TRAEFIK_PROVIDERS_DOCKER_ALLOWEMPTYSERVICES=true
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.proxy.entrypoints: "web"
+      traefik.http.routers.proxy.rule: "Host(`proxy.localtest.me`)"
+      traefik.http.routers.proxy.service: "api@internal"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+networks:
+    default:
+      name: proxy
