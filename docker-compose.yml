@@ -3,7 +3,7 @@
 #
 # ===Usage===
 # Bring up the Traefik Reverse Proxy:
-#   docker compose -f stack-proxy.yml -p proxy up -d
+#   docker compose up -d
 #
 # Bring down and stop the Reverse Proxy:
 #   docker compose down
@@ -17,17 +17,17 @@ services:
       TRAEFIK_ENTRYPOINTS_WEB_ADDRESS: :80
       TRAEFIK_ENTRYPOINTS_NEO4J_ADDRESS: :7687
       TRAEFIK_ENTRYPOINTS_WEB_HTTP_MIDDLEWARES: redirect-to-https@file
-      TRAEFIK_ENTRYPOINTS_WEBSECURE_HTTP_TLS: true
+      TRAEFIK_ENTRYPOINTS_WEBSECURE_HTTP_TLS: "true"
       TRAEFIK_ENTRYPOINTS_WEBSECURE_ADDRESS: :443
-      TRAEFIK_API_DASHBOARD: true
-      TRAEFIK_PROVIDERS_DOCKER: true
-      TRAEFIK_PROVIDERS_DOCKER_EXPOSEDBYDEFAULT: false
+      TRAEFIK_API_DASHBOARD: "true"
+      TRAEFIK_PROVIDERS_DOCKER: "true"
+      TRAEFIK_PROVIDERS_DOCKER_EXPOSEDBYDEFAULT: "false"
       TRAEFIK_PROVIDERS_DOCKER_DEFAULTRULE: >
         Host(`{{ or (index .Labels "traefik.hostname")
                     (index .Labels "com.docker.compose.service")
                     .Name 
               }}.localtest.me`)
-      TRAEFIK_PROVIDERS_DOCKER_ALLOWEMPTYSERVICES: true
+      TRAEFIK_PROVIDERS_DOCKER_ALLOWEMPTYSERVICES: "true"
       TRAEFIK_PROVIDERS_DOCKER_NETWORK: proxy
       TRAEFIK_PROVIDERS_FILE_FILENAME: /etc/traefik/dynamic.yml
     ports:
