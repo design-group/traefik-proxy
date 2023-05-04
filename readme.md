@@ -44,8 +44,8 @@ To add an Ignition Gateway or other container to the proxy, add the following la
 
 ```yaml
 labels:
-	traefik.enable: "true"
-    traefik.hostname: <desired-address>
+  traefik.enable: "true"
+  traefik.hostname: <desired-address>
 environment:
   GATEWAY_SYSTEM_NAME: <desired-address>
   GATEWAY_PUBLIC_HTTP_PORT: 80
@@ -78,10 +78,10 @@ Then add the following to the `docker-compose.yml` file:
 
 ```yaml
 networks:
-    default:
-    proxy:
-        external: true
-        name: proxy
+  default:
+  proxy:
+    external: true
+    name: proxy
 ```
 
 After adding the labels and environment variables, restart the container. Once the container restarts, it should be accessible at `https://<container-name>.localtest.me/`.
