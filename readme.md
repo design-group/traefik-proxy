@@ -134,3 +134,25 @@ After adding the labels and environment variables, re-up the container. Once the
 ```sh
 docker-compose up -d
 ```
+
+---
+
+## Enabling TLS for a secure connection over TCP
+
+If you want to enable TLS for a secure connection over TCP, add the following labels to the container:
+
+```yaml
+traefik.tcp.routers.<router-name>.tls: "true"
+traefik.tcp.routers.<router-name>.rule: "HostSNI(`<desired-address>.localtest.me`)"
+traefik.tcp.routers.<router-name>.service: "<router-name>"
+traefik.tcp.services.<router-name>.loadbalancer.server.port: "<port>"
+```
+
+For example, to enable TLS for a secure connection over TCP for a Neo4J Graph Database, add the following labels to the container:
+
+```yaml
+traefik.tcp.routers.neo4j.tls: "true"
+traefik.tcp.routers.neo4j.rule: "HostSNI(`neo4j.localtest.me`)"
+traefik.tcp.routers.neo4j.service: "neo4j"
+traefik.tcp.services.neo4j.loadbalancer.server.port: "7687"
+```
