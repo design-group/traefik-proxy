@@ -1,2 +1,2 @@
-.crt
+*.crt
 certs/

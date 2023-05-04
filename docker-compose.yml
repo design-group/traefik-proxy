@@ -1,25 +1,66 @@
+### Global Reverse Proxy Stack
+# NOTE: Binds to Port 80 on your host, must be free in order to work!
+#
+# ===Usage===
+# Bring up the Traefik Reverse Proxy:
+#   docker compose -f stack-proxy.yml -p proxy up -d
+#
+# Bring down and stop the Reverse Proxy:
+#   docker compose down
+---
 services:
   proxy:
-    image: traefik:2.9
+    image: traefik:2.10
     container_name: proxy
     restart: always
-    ports:
-      - 80:80
     environment:  # https://docs.traefik.io/reference/static-configuration/env/
-      - TRAEFIK_ENTRYPOINTS_WEB_ADDRESS=:80
-      - TRAEFIK_API_DASHBOARD=true
-      - TRAEFIK_PROVIDERS_DOCKER=true
-      - TRAEFIK_PROVIDERS_DOCKER_EXPOSEDBYDEFAULT=true
-      - TRAEFIK_PROVIDERS_DOCKER_NETWORK=proxy
-      - TRAEFIK_PROVIDERS_DOCKER_ALLOWEMPTYSERVICES=true
+      TRAEFIK_ENTRYPOINTS_WEB_ADDRESS: :80
+      TRAEFIK_ENTRYPOINTS_NEO4J_ADDRESS: :7687
+      TRAEFIK_ENTRYPOINTS_WEB_HTTP_MIDDLEWARES: redirect-to-https@file
+      TRAEFIK_ENTRYPOINTS_WEBSECURE_HTTP_TLS: true
+      TRAEFIK_ENTRYPOINTS_WEBSECURE_ADDRESS: :443
+      TRAEFIK_API_DASHBOARD: true
+      TRAEFIK_PROVIDERS_DOCKER: true
+      TRAEFIK_PROVIDERS_DOCKER_EXPOSEDBYDEFAULT: false
+      TRAEFIK_PROVIDERS_DOCKER_DEFAULTRULE: >
+        Host(`{{ or (index .Labels "traefik.hostname")
+                    (index .Labels "com.docker.compose.service")
+                    .Name 
+              }}.localtest.me`)
+      TRAEFIK_PROVIDERS_DOCKER_ALLOWEMPTYSERVICES: true
+      TRAEFIK_PROVIDERS_DOCKER_NETWORK: proxy
+      TRAEFIK_PROVIDERS_FILE_FILENAME: /etc/traefik/dynamic.yml
+    ports:
+      - "80:80"
+      - "443:443"
+      - "7687:7687"
     labels:
-      traefik.enable: "true"
-      traefik.http.routers.proxy.entrypoints: "web"
-      traefik.http.routers.proxy.rule: "Host(`proxy.localtest.me`)"
-      traefik.http.routers.proxy.service: "api@internal"
+      - "traefik.enable=true"
+      - "traefik.hostname=proxy"
+      - "traefik.http.routers.proxy.service=api@internal"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./certs:/etc/traefik/certs
+      - ./traefik/dynamic.yml:/etc/traefik/dynamic.yml
+  
+  step-ca:
+    image: smallstep/step-ca
+    container_name: step-ca
+    restart: always
+    environment:
+      DOCKER_STEPCA_INIT_NAME: Smallstep
+      DOCKER_STEPCA_INIT_DNS_NAMES: "localhost,localtest.me"
+      DOCKER_STEPCA_INIT_REMOTE_MANAGEMENT: "true"
+    volumes:
+      - step:/home/step
+      - ./certs:/certs
+    ports:
+      - "9000:9000"
 
 networks:
-    default:
-      name: proxy
+  default:
+    name: proxy
+
+volumes:
+  step:
+  certs:
