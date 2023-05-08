@@ -45,4 +45,12 @@ docker cp step-ca:/home/step/certs/root_ca.crt ./certs/
 echo "Restarting the traefik container to load the new certificates..."
 docker-compose restart proxy
 
+# Create certificate chain for the localtest.me domain
+echo "Creating certificate chain for the localtest.me domain..."
+cat ./certs/localtest.me.crt ./certs/root_ca.crt > ./certs/localtest.me.chain.crt
+
+# Create a bundle for the localtest.me domain
+echo "Creating a bundle for the localtest.me domain..."
+openssl pkcs12 -export -in certs/localtest.me.chain.crt -inkey certs/localtest.me.key -name local-step-ca -passout pass:P@ssword1! -out certs/localtest.me.p12
+
 echo "Certificates generated successfully."
