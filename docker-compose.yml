@@ -30,6 +30,11 @@ services:
       TRAEFIK_PROVIDERS_DOCKER_ALLOWEMPTYSERVICES: "true"
       TRAEFIK_PROVIDERS_DOCKER_NETWORK: proxy
       TRAEFIK_PROVIDERS_FILE_FILENAME: /etc/traefik/dynamic.yml
+      TRAEFIK_SERVERSTRANSPORT_ROOTCAS: /etc/traefik/certs/root_ca.crt
+      TRAEFIK_LOG_LEVEL: DEBUG
+      TRAEFIK_SERVERSTRANSPORT_INSECURESKIPVERIFY: "true"
+    
+
     ports:
       - "80:80"
       - "443:443"
@@ -42,7 +47,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./certs:/etc/traefik/certs
       - ./traefik/dynamic.yml:/etc/traefik/dynamic.yml
-  
+
   step-ca:
     image: smallstep/step-ca
     container_name: step-ca
@@ -51,6 +56,7 @@ services:
       DOCKER_STEPCA_INIT_NAME: Smallstep
       DOCKER_STEPCA_INIT_DNS_NAMES: "localhost,localtest.me"
       DOCKER_STEPCA_INIT_REMOTE_MANAGEMENT: "true"
+      DOCKER_STEPCA_DEFAULT_MAX_TTL: "720h"
     volumes:
       - step:/home/step
       - ./certs:/certs
