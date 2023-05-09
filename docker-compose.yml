@@ -53,15 +53,35 @@ services:
     container_name: step-ca
     restart: always
     environment:
-      DOCKER_STEPCA_INIT_NAME: Smallstep
+      DOCKER_STEPCA_INIT_NAME: LocalTest Smallstep CA
       DOCKER_STEPCA_INIT_DNS_NAMES: "localhost,localtest.me"
       DOCKER_STEPCA_INIT_REMOTE_MANAGEMENT: "true"
-      DOCKER_STEPCA_DEFAULT_MAX_TTL: "720h"
+      DOCKER_STEPCA_INIT_PASSWORD: ignition
     volumes:
       - step:/home/step
       - ./certs:/certs
     ports:
       - "9000:9000"
+    
+  keycloak:
+    image: quay.io/keycloak/keycloak:21.1.1
+    container_name: keycloak
+    restart: always
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+      - KC_PROXY=edge
+      - KC_HOSTNAME_URL=https://idp.localtest.me
+      - KEYCLOAK_FRONTEND_URL=https://idp.localtest.me
+      - PROXY_ADDRESS_FORWARDING=true
+    labels:
+      - "traefik.enable=true"
+      - "traefik.hostname=idp"
+    command: >
+      start-dev
+
+    volumes:
+      - ./certs:/certs
 
 networks:
   default:

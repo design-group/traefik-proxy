@@ -15,10 +15,6 @@ until docker-compose exec -T step-ca nc -z localhost 9000 > /dev/null 2>&1; do
     sleep 5
 done
 
-# Get the password from the container
-echo "Getting the password from the step-ca container..."
-PASSWORD=$(docker-compose logs step-ca | awk -F': ' '/Your CA administrative password is/ {print $2}')
-
 # Get the fingerprint
 echo "Getting the fingerprint from the step-ca container..."
 CA_FINGERPRINT=$(docker-compose exec -T step-ca step certificate fingerprint /home/step/certs/root_ca.crt)
@@ -30,8 +26,11 @@ docker exec -i $step_ca_container_id step ca bootstrap --ca-url https://localhos
 
 # Create the certificate for the localtest.me domain
 echo "Creating the certificate for the localtest.me domain..."
-cert_gen_cmd=("step" "ca" "certificate" "*.localtest.me" "/certs/localtest.me.crt" "/certs/localtest.me.key" "--san=*.localtest.me" "--not-after" "8760h" "--provisioner=admin" "--password-file=/dev/stdin" "--force")
-echo "$PASSWORD" | docker exec -i $step_ca_container_id "${cert_gen_cmd[@]}"
+cert_gen_cmd=("step" "ca" "certificate" "*.localtest.me" "/certs/localtest.me.crt" "/certs/localtest.me.key" "--san=*.localtest.me" "--not-after" "8760h" "--provisioner=admin" "--password-file=/home/step/secrets/password" "--force")
+docker-compose exec -T step-ca "${cert_gen_cmd[@]}"
+
+# This will execute:
+docker-compose exec -T step-ca step ca certificate "*.localtest.me" "/certs/localtest.me.crt" "/certs/localtest.me.key" --san="*.localtest.me" --not-after 8760h --provisioner=admin --password-file=/home/step/secrets/password --force
 
 # Export the root CA certificate
 echo "Exporting the root CA certificate..."
@@ -49,8 +48,12 @@ docker-compose restart proxy
 echo "Creating certificate chain for the localtest.me domain..."
 cat ./certs/localtest.me.crt ./certs/root_ca.crt > ./certs/localtest.me.chain.crt
 
-# Create a bundle for the localtest.me domain
+# Create the P12 bundle for the localtest.me domain
 echo "Creating a bundle for the localtest.me domain..."
-openssl pkcs12 -export -in certs/localtest.me.chain.crt -inkey certs/localtest.me.key -name local-step-ca -passout pass:P@ssword1! -out certs/localtest.me.p12
+openssl pkcs12 -export -in certs/localtest.me.chain.crt -inkey certs/localtest.me.key -name ignition -passout pass:ignition -out certs/localtest.me.p12
+
+# Convert the PKCS12 bundle to JKS format for the localtest.me domain
+echo "Converting the PKCS12 bundle to JKS format..."
+keytool -importkeystore -noprompt -srckeystore certs/localtest.me.p12 -srcstoretype pkcs12 -srcalias ignition -destkeystore certs/localtest.me.jks -deststoretype jks -destalias ignition -storepass ignition -srcstorepass "ignition" > /dev/null 2>&1
 
 echo "Certificates generated successfully."
