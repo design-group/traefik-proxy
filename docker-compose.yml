@@ -62,26 +62,6 @@ services:
       - ./certs:/certs
     ports:
       - "9000:9000"
-    
-  keycloak:
-    image: quay.io/keycloak/keycloak:21.1.1
-    container_name: keycloak
-    restart: always
-    environment:
-      - KEYCLOAK_ADMIN=admin
-      - KEYCLOAK_ADMIN_PASSWORD=admin
-      - KC_PROXY=edge
-      - KC_HOSTNAME_URL=https://idp.localtest.me
-      - KEYCLOAK_FRONTEND_URL=https://idp.localtest.me
-      - PROXY_ADDRESS_FORWARDING=true
-    labels:
-      - "traefik.enable=true"
-      - "traefik.hostname=idp"
-    command: >
-      start-dev
-
-    volumes:
-      - ./certs:/certs
 
 networks:
   default:
