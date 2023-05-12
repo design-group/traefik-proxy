@@ -1,0 +1,17 @@
+# Dynamic configuration
+---
+# TLS Configuration
+tls:
+  stores:
+    default:
+      defaultCertificate:
+        certFile: /etc/traefik/certs/localtest.me.crt
+        keyFile: /etc/traefik/certs/localtest.me.key
+
+# Redirect to https
+http:
+  middlewares:
+    redirect-to-https:
+      redirectScheme:
+        scheme: https
+        port: 443
