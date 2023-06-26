@@ -80,7 +80,16 @@ ___
 
 ## Usage
 
-To add an Ignition Gateway or other container to the proxy, add the following labels and environment variables to the `docker-compose.traefik.yml` container:
+If you do not already have one in your project folder, create a file called `docker-compose.traefik.yml`.
+
+In order to get your local environment to use this file, add the following to the `.env` file:
+
+```sh
+COMPOSE_PATH_SEPARATOR=:
+COMPOSE_FILE=docker-compose.yml:docker-compose.traefik.yml
+```
+
+To add an Ignition Gateway or other container to the proxy, add the following labels and environment variables to the `docker-compose.traefik.yml` file for each container in your `docker-compose.yml`:
 
 ```yaml
 labels:
@@ -93,7 +102,7 @@ networks:
   - proxy
 ```
 
-The traefik proxy is configured to use the `proxy` network, so we need to add the following networks to the `docker-compose.traefik.yml` file:
+The traefik proxy is configured to use the `proxy` network, so we need to add the following networks to the project's `docker-compose.traefik.yml` file:
 
 ```yaml
 networks:
@@ -103,20 +112,7 @@ networks:
     name: proxy
 ```
 
-After adding the labels and environment variables, restart the container. Once the container restarts, it should be accessible at `http(s)://<desired-address>.localtest.me/`.
-
-___
-
-## Projects with pre-existing docker-compose.yml files
-
-If the project already has a `docker-compose.yml` file, you can add a file named `docker-compose.traefik.yml` to the project. This file will be used to add the labels and environment variables to the container. In order to get your local environment to use this file, add the following to the `.env` file:
-
-```sh
-COMPOSE_PATH_SEPARATOR=:
-COMPOSE_FILE=docker-compose.yml:docker-compose.traefik.yml
-```
-
-Then, add the labels and environment variables to the `docker-compose.traefik.yml` file. For example, here is the pre-existing `docker-compose.yml` file for the basic [Ignition Gateway:](https://github.com/design-group/ignition-architecture-template)
+For example, here is the pre-existing `docker-compose.yml` file for the basic [Ignition Gateway:](https://github.com/design-group/ignition-architecture-template)
 
 ```yaml
 services:
@@ -134,7 +130,7 @@ services:
       -r /restore.gwbk
 ```
 
-Here is the `docker-compose.traefik.yml` file for the Ignition Gateway:
+and here is the `docker-compose.traefik.yml` file for the Ignition Gateway:
 
 ```yaml
 services:
@@ -155,13 +151,13 @@ networks:
     name: proxy
 ```
 
-After adding the labels and environment variables, re-up the container. 
+After adding the labels, environment variables, and replacing the `<desired-address>` fields, restart the container, or if the container was never running, type:
 
 ```sh
 docker-compose up -d
 ```
 
-Once the container restarts, it should be accessible at `http(s)://<desired-address>.localtest.me/`.
+Once the container is running, it should be accessible at `http(s)://<desired-address>.localtest.me/`.
 
 We dont necessarily _need_ to create the `docker-compose.traefik.yml` file to add the labels and environment variables. We could also add the labels and environment variables to the `docker-compose.yml` file directly. However, this would require that every developer working on this project has the same Traefik Reverse Proxy setup on their local machine. By using the `docker-compose.traefik.yml` file, we can keep the Traefik Reverse Proxy setup in this repository and not have to worry about every developer having the same setup.
 
