@@ -83,16 +83,6 @@ labels:
   traefik.hostname: <desired-address>
 environment:
   GATEWAY_PUBLIC_ADDRESS: <desired-address>
-```
-
-For example, to add an Ignition Gateway to the proxy, add the following labels, networks, and environment variables to the container:
-
-```yaml
-labels:
-  traefik.enable: "true"
-  traefik.hostname: <desired-address>
-environment:
-  GATEWAY_PUBLIC_ADDRESS: <desired-address>
 networks:
   - default
   - proxy
