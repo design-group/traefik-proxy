@@ -90,9 +90,9 @@ For example, to add an Ignition Gateway to the proxy, add the following labels, 
 ```yaml
 labels:
   traefik.enable: "true"
-  traefik.hostname: ignition
+  traefik.hostname: <desired-address>
 environment:
-  GATEWAY_PUBLIC_ADDRESS: ignition
+  GATEWAY_PUBLIC_ADDRESS: <desired-address>
 networks:
   - default
   - proxy
