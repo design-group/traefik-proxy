@@ -45,7 +45,7 @@ ___
 	```sh
 	mkdir certs
 	```
-3. To allow for the HTTPS redirect, go to the `docker-compose.yml` and uncomment line 19:
+3. To allow for the **HTTPS** redirect, go to the `docker-compose.yml` and uncomment line 19:
 
 	```sh
  	TRAEFIK_ENTRYPOINTS_WEB_HTTP_MIDDLEWARES: redirect-to-https@file
