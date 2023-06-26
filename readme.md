@@ -155,11 +155,13 @@ networks:
     name: proxy
 ```
 
-After adding the labels and environment variables, re-up the container. Once the container restarts, it should be accessible at `http(s)://ignition.localtest.me/`.
+After adding the labels and environment variables, re-up the container. 
 
 ```sh
 docker-compose up -d
 ```
+
+Once the container restarts, it should be accessible at `http(s)://ignition.localtest.me/`.
 
 We dont necessarily _need_ to create the `docker-compose.traefik.yml` file to add the labels and environment variables. We could also add the labels and environment variables to the `docker-compose.yml` file directly. However, this would require that every developer working on this project has the same Traefik Reverse Proxy setup on their local machine. By using the `docker-compose.traefik.yml` file, we can keep the Traefik Reverse Proxy setup in this repository and not have to worry about every developer having the same setup.
 
