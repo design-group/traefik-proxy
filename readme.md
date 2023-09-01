@@ -18,12 +18,13 @@ ___
     docker compose pull && docker compose up -d
     ```
     
-	On WSL
+	On Windows WSL or Linux:
     
 	```sh
     docker-compose pull && docker-compose up -d
     ```
 
+Once the Traefik container is running, its web page should be accessible at `proxy.localtest.me`. This URL is configurable in the Traefik `docker-compose.yml` file using the `traefik.http.routers.proxy.rule` label.
 ___
 
 ## Usage
@@ -80,7 +81,7 @@ After adding the labels and environment variables, restart the container. Once t
 
 ___
 
-## Projects with pre-existing docker-compose.yml files
+## Projects with Pre-Existing docker-compose.yml Files
 
 If the project already has a `docker-compose.yml` file, you can add a file named `docker-compose.traefik.yml` to the project. This file will be used to add the labels and environment variables to the container. In order to get your local environment to use this file, add the following to the `.env` file:
 
@@ -127,7 +128,7 @@ networks:
     name: proxy
 ```
 
-After adding the labels and environment variables, re-up the container. Once the container restarts, it should be accessible at `http://ignition.localtest.me/`.
+After adding the labels and environment variables, re-up the container. Once the container restarts, it should be accessible at `http://ignition.localtest.me/` (assuming that the Traefix container is currently running).
 
 ```sh
 docker-compose up -d
@@ -137,13 +138,16 @@ ___
 
 ## Troubleshooting
 
-### Gateway is not accessible
+### Gateway is Not Accessible
 
-If the gateway is not accessible, check the following:
+If the Gateway is not accessible, check the following:
 
-1. Is the gateway container running?
-2. Is the gateway container using the correct labels?
-3. Is the gateway container using the correct port?
-4. Is the gateway container using the correct hostname?
-5. Is the gateway container using the correct IP address?
-6. Is the gateway container using the correct network?
+1. Is the Gateway container running?
+2. Is the Gateway container using the correct labels?
+3. Is the Gateway container using the correct port?
+4. Is the Gateway container using the correct hostname?
+5. Is the Gateway container using the correct IP address?
+6. Is the Gateway container using the correct network?
+
+### Error When Up-ing the Container
+If you receive a "network proxy declared as external, but could not be found" error, make sure the the Traefik container is running (it may be using a separate `docker-compose.yml` file that needs to be up'ed separately. Alternatively, try running `docker network create proxy` to create the proxy network manually.
